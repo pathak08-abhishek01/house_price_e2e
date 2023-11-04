@@ -58,6 +58,8 @@ cover/
 # dirs
 artifacts/
 artifacts/*
+*/catboost_info/
+mlruns/
 # Django stuff:
 *.log
 local_settings.py
