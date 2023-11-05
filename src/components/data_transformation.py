@@ -8,7 +8,8 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from dataclasses import dataclass
-
+from src.utils import save_object
+from sklearn.pipeline import Pipeline
 
 
 @dataclass
@@ -17,114 +18,121 @@ class DataTransformationConfig:
     This class contains the configuration for the data transformation.
     """
     preprocessor_obj_file_path = os.path.join("artifacts","transformer","preprocessor.pkl")
+    
+    
+
 
 
 class DataTransformation:
     """
     This class contains the methods for the data transformation.
     """
-def __init__(self):
-    """
-    Initializes the DataTransformation object.
-    """
-    # Create a new instance of DataTransformationConfig
-    self.data_transformation_config = DataTransformationConfig()
+    def __init__(self):
+        """
+        Initializes the DataTransformation object.
+        """
+        # Create a new instance of DataTransformationConfig
+        self.data_transformation_config = DataTransformationConfig()
 
-def get_data_transformer_object(self):
-    """
-    This method returns the data transformer object.
-    """
+    def get_data_transformer_object(self):
+        """
+        This method returns the data transformer object.
+        """
 
-    try:
-        # Define the list of numerical columns
-        numerical_columns = ['area', 'bedrooms', 'bathrooms', 'stories', 'parking']
+        try:
+            # Define the list of numerical columns
+            numerical_columns = ['area', 'bedrooms', 'bathrooms', 'stories', 'parking']
+            
+            # Define the list of categorical columns
+            categorical_columns = ['mainroad', 'guestroom', 'basement', 'hotwaterheating', 'airconditioning', 'furnishingstatus']
+
+            # Create a pipeline for numerical columns
+            numerical_pipeline = Pipeline(steps=[
+                ('imputer', SimpleImputer(strategy='median')),
+                ('scaler', StandardScaler())
+            ])
+
+            # Create a pipeline for categorical columns
+            categorical_pipeline = Pipeline(steps=[
+                ('imputer', SimpleImputer(strategy='most_frequent')),
+                ('onehotencoder', OneHotEncoder()),
+            ])
+
+            # Log the categorical and numerical columns
+            logging.info(f"Categorical columns: {categorical_columns}")
+            logging.info(f"Numerical columns: {numerical_columns}")
+
+            # Create a preprocessor using ColumnTransformer
+            preprocessor = ColumnTransformer(
+                [
+                    ("num_pipeline", numerical_pipeline, numerical_columns),
+                    ("cat_pipelines", categorical_pipeline, categorical_columns)
+                ]
+            )
+
+            return preprocessor
         
-        # Define the list of categorical columns
-        categorical_columns = ['mainroad', 'guestroom', 'basement', 'hotwaterheating', 'airconditioning', 'furnishingstatus']
+        except Exception as e:
+            raise CustomException(e, sys)
+            
 
-        # Create a pipeline for numerical columns
-        numerical_pipeline = Pipeline(steps=[
-            ('imputer', SimpleImputer(strategy='median')),
-            ('scaler', StandardScaler())
-        ])
+    def initiate_data_transformation(self, raw_data_path):
+        """
+        This method initiates the data transformation.
 
-        # Create a pipeline for categorical columns
-        categorical_pipeline = Pipeline(steps=[
-            ('imputer', SimpleImputer(strategy='most_frequent')),
-            ('onehotencoder', OneHotEncoder()),
-        ])
+        Args:
+            train_path (str): The path to the training data file.
+            test_path (str): The path to the testing data file.
 
-        # Log the categorical and numerical columns
-        logging.info(f"Categorical columns: {categorical_columns}")
-        logging.info(f"Numerical columns: {numerical_columns}")
+        Returns:
+            tuple: A tuple containing the transformed training and testing data, target feature data, and the path to the saved preprocessing object file.
+        """
+        try:
+            self.data_path = raw_data_path
+            # Read the train and test data from the specified paths
+            data = pd.read_csv(self.data_path)
 
-        # Create a preprocessor using ColumnTransformer
-        preprocessor = ColumnTransformer(
-            [
-                ("num_pipeline", numerical_pipeline, numerical_columns),
-                ("cat_pipelines", categorical_pipeline, categorical_columns)
-            ]
-        )
+            logging.info("Read train and test data completed")
 
-        return preprocessor
-    
-    except Exception as e:
-        raise CustomException(e, sys)
-        
+            logging.info("Obtaining preprocessing object")
 
-def initiate_data_transformation(self, train_path, test_path):
-    """
-    This method initiates the data transformation.
+            # Get the data transformer object
+            preprocessing_obj = self.get_data_transformer_object()
 
-    Args:
-        train_path (str): The path to the training data file.
-        test_path (str): The path to the testing data file.
+            target_column_name = "price"
 
-    Returns:
-        tuple: A tuple containing the transformed training and testing data, target feature data, and the path to the saved preprocessing object file.
-    """
-    try:
-        # Read the train and test data from the specified paths
-        train_df = pd.read_csv(train_path)
-        test_df = pd.read_csv(test_path)
+            # Split the data into input features and target features
+            X = data.drop(columns=[target_column_name],axis=1)
+            Y= data[target_column_name]
 
-        logging.info("Read train and test data completed")
 
-        logging.info("Obtaining preprocessing object")
+            # Split the data into train and test sets
+            logging.info("Splitting train and test data")
+            X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=8)
 
-        # Get the data transformer object
-        preprocessing_obj = self.get_data_transformer_object()
+            
+            logging.info(
+                f"Applying preprocessing object on training dataframe and testing dataframe."
+            )
 
-        target_column_name = "price"
+            # Apply the preprocessing object on the training and testing input features
+            X_train = preprocessing_obj.fit_transform(X_train)
+            X_test = preprocessing_obj.transform(X_test)
 
-        # Split the training data into input features and target features
-        input_feature_train_df = train_df.drop(columns=[target_column_name],axis=1)
-        target_feature_train_df = train_df[target_column_name]
+            logging.info(f"Saved preprocessing object.")
 
-        # Split the testing data into input features and target features
-        input_feature_test_df = test_df.drop(columns=[target_column_name],axis=1)
-        target_feature_test_df = test_df[target_column_name]
+            # Save the preprocessing object to a file
+            save_object(
+                file_path=self.data_transformation_config.preprocessor_obj_file_path, obj=preprocessing_obj
+            )
+            
+            # Return the transformed data, target feature data, and the path to the saved preprocessing object file
+            return X_train, X_test, Y_train, Y_test, self.data_transformation_config.preprocessor_obj_file_path
+                
+            
 
-        logging.info(
-            f"Applying preprocessing object on training dataframe and testing dataframe."
-        )
-
-        # Apply the preprocessing object on the training and testing input features
-        input_feature_train_arr = preprocessing_obj.fit_transform(input_feature_train_df)
-        input_feature_test_arr = preprocessing_obj.transform(input_feature_test_df)
-
-        logging.info(f"Saved preprocessing object.")
-
-        # Save the preprocessing object to a file
-        save_object(
-            file_path=self.data_transformation_config.preprocessor_obj_file_path, obj=preprocessing_obj
-        )
-
-        # Return the transformed data, target feature data, and the path to the saved preprocessing object file
-        return (
-            input_feature_train_arr, target_feature_train_df, input_feature_test_arr, target_feature_test_df,
-            self.data_transformation_config.preprocessor_obj_file_path
-        )
+        except Exception as e:
+            raise CustomException(e, sys)
     
 
 

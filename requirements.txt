@@ -8,4 +8,5 @@ catboost== 1.2.2
 xgboost==2.0.0
 Flask
 mlflow
+dill
 # -e .

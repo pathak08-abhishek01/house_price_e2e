@@ -59,6 +59,7 @@ cover/
 artifacts/
 artifacts/*
 */catboost_info/
+catboost_info/
 mlruns/
 # Django stuff:
 *.log
