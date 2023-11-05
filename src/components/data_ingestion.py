@@ -9,9 +9,9 @@ from dataclasses import dataclass
 
 @dataclass
 class DataIngestionConfig:
-    train_data_path: str=os.path.join('artifacts',"train.csv")
-    test_data_path: str=os.path.join('artifacts',"test.csv")
-    raw_data_path: str=os.path.join('artifacts',"data.csv")
+    train_data_path: str=os.path.join('artifacts',"data","train.csv")
+    test_data_path: str=os.path.join('artifacts',"data","test.csv")
+    raw_data_path: str=os.path.join('artifacts',"data""data.csv")
 
 
 
@@ -69,3 +69,4 @@ class DataIngestion:
         except Exception as e:
             # Raise a custom exception if an error occurs
             raise CustomException(e, sys)
+        
