@@ -4,9 +4,7 @@ import pandas as pd
 from src.logger import logging
 from src.exception import CustomException
 from dataclasses import dataclass
-from src.components.data_transformation import DataTransformation, DataTransformationConfig
-from src.components.model_trainer import ModelTrainer, ModelTrainerConfig
-from src.components.model_tuner import ModelTuner, ModelTunerConfig
+
 
 
 @dataclass
@@ -58,20 +56,7 @@ class DataIngestion:
         except Exception as e:
             # Raise a custom exception if an error occurs
             raise CustomException(e, sys)
-        
-if __name__=="__main__":
-    obj=DataIngestion()
-    raw_data_path = obj.initiate_data_ingestion()
 
-    data_transformation = DataTransformation()
-    X_train, X_test, Y_train, Y_test, processor_path = data_transformation.initiate_data_transformation(raw_data_path)
-
-    model_trainer = ModelTrainer()
-    model_name = model_trainer.initiate_model_trainer(X_train, Y_train, X_test, Y_test)
-
-    model_tuner = ModelTuner()
-    model_tuner.initiate_model_tuner(model_name, X_train, Y_train, X_test, Y_test)
-
-
+    
 
 

@@ -1,0 +1,135 @@
+<html>
+<body>
+    <div class="login">
+       <h1>House Price Prediction</h1>
+   
+       <form action="{{ url_for('predict')}}" method="post">
+        <h1>
+            <legend>Student Exam Performance Prediction</legend>
+        </h1>
+        <div class="mb-3">
+            <label class="form-label">mainroad</label>
+            <select class="form-control" name="mainroad" placeholder="Enter you Response" required>
+                <option class="placeholder" selected disabled value="">Select your Response</option>
+                <option value="yes">
+                    yes
+                </option>
+                <option value="No">
+                    no
+                </option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">guestroom</label>
+            <select class="form-control" name="guestroom" placeholder="Enter you Response" required>
+                <option class="placeholder" selected disabled value="">Select Response</option>
+                <option value="yes">
+                    yes
+                </option>
+                <option value="no">
+                    no
+                </option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">basement</label>
+            <select class="form-control" name="basement"
+                placeholder="Enter you Response" required>
+                <option class="placeholder" selected disabled value="">Select Parent Response</option>
+                <option value="yes">
+                    yes
+                </option>
+                <option value="no">
+                    no
+                </option>
+                
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">hotwaterheating</label>
+            <select class="form-control" name="hotwaterheating" placeholder="Enter you Response" required>
+                <option class="placeholder" selected disabled value="">Select Lunch Response</option>
+                <option value="yes">
+                    yes
+                </option>
+                <option value="no">
+                    no
+                </option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">airconditioning</label>
+            <select class="form-control" name="airconditioning" placeholder="Enter you Response"
+                required>
+                <option class="placeholder" selected disabled value="">Select Response</option>
+                <option value="yes">
+                    yes
+                </option>
+                <option value="no">
+                    no
+                </option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">prefarea</label>
+            <select class="form-control" name="prefarea" placeholder="Enter you Response"
+                required>
+                <option class="placeholder" selected disabled value="">Select Response</option>
+                <option value="yes">
+                    yes
+                </option>
+                <option value="no">
+                    no
+                </option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">furnishingstatus</label>
+            <select class="form-control" name="furnishingstatus" placeholder="Enter you Response"
+                required>
+                <option class="placeholder" selected disabled value="">Select Response</option>
+                <option value="furnished">
+                    furnished
+                </option>
+                <option value="semi-furnished">
+                    semi-furnished
+                </option>
+                <option value="unfurnished">
+                    unfurnished
+                </option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">area</label>
+            <input class="form-control" type="number" name="area"
+                placeholder="Enter your area" min='0' max='16200' />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">bedrooms</label>
+            <input class="form-control" type="number" name="bedrooms"
+                placeholder="Enter your bedrooms" min='0' max='6' />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">bathrooms</label>
+            <input class="form-control" type="number" name="bathrooms"
+                placeholder="Enter your bathrooms" min='0' max='4' />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">stories</label>
+            <input class="form-control" type="number" name="stories"
+                placeholder="Enter your stories" min='0' max='4' />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">parking</label>
+            <input class="form-control" type="number" name="parking"
+                placeholder="Enter your parking" min='0' max='4' />
+        </div>
+        <div class="mb-3">
+            <input class="btn btn-primary" type="submit" value="Predict your House Price" required />
+        </div>
+    </form>
+    <h2>
+       The prediction is {{results}}
+    </h2>
+   <body>
+</html>
